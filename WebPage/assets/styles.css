@@ -1,0 +1,9 @@
+.contenedor{
+    display: flex;
+    justify-content: space-around;
+    direction: row;
+}
+
+.body-container{
+    margin: 20px 35px;
+}
