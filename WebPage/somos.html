@@ -10,18 +10,16 @@
 
     <body>
 
-        <nav class="navbar navbar-expand-lg bg-light border-bottom">
+        <nav class="navbar navbar-expand-lg bg-light border-bottom sticky-top">
             <div class="container">
-                <a class="navbar-brand" href="/WebPage/home.html"><img src="assets/logo.png" width="40"> Librería Duoc</a>
+                <a class="navbar-brand" href="./home.html"><img src="assets/logo.png" width="40" alt=""> Librería Duoc</a>
                 <form class="d-flex mx-auto" role="search">
-                    <input class="form-control" type="search" placeholder="Buscar Título, Autor, Año" aria-label="Search" style="width: 220px;">
+                    <input class="form-control" type="search" placeholder="Buscar Título, Autor..." aria-label="Search" style="width: 250px;">
                 </form>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/WebPage/usuarios.html"><i class="bi bi-person"></i></a></li>
+                    <li class="nav-item"><a class="nav-link" href="./usuarios.html"><i class="bi bi-person-circle fs-4"></i></a></li>
                     <li class="nav-item position-relative">
-                        <a class="nav-link" href="/WebPage/carrito.html"><i class="bi bi-cart"></i>
-                            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
-                        </a>
+                        <a class="nav-link" href="./carrito.html"><i class="bi bi-cart-fill fs-4"></i></a>
                     </li>
                 </ul>
             </div>
@@ -30,23 +28,30 @@
         <div class="bg-dark text-white py-2">
             <div class="container d-flex justify-content-center gap-4">
                 <a href="/WebPage/home.html" class="text-white text-decoration-none">Inicio</a>
-                <a class="text-white text-decoration-none">Categorías</a>
-                <a class="text-white text-decoration-none">Más Vendidos</a>
                 <a href="/WebPage/contacto.html" class="text-white text-decoration-none">Contacto</a>
             </div>
         </div>
 
-        <footer class="bg-dark text-white py-4">
-            <div class="container d-flex justify-content-between">
-                <div><img src="assets/logo.png" width="40"></div>
-                <div>
-                    <a href="/WebPage/somos.html" class="text-white me-3">Quiénes somos</a>
-                    <a href="/WebPage/usuarios.html" class="text-white me-3">Mi cuenta</a>
-                    <a href="/WebPage/contacto.html" class="text-white">Contacto</a>
-                </div>
-                <div>
-                    <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+        <footer class="bg-dark text-white py-4 mt-5">
+            <div class="container text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <p class="text-white-50 mt-2">© 2025 Todos los derechos reservados.</p>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <h5>Enlaces</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="./somos.html" class="text-white text-decoration-none">Quiénes somos</a></li>
+                            <li><a href="./usuarios.html" class="text-white text-decoration-none">Mi cuenta</a></li>
+                            <li><a href="./contacto.html" class="text-white text-decoration-none">Contacto</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Síguenos</h5>
+                        <a href="#" class="text-white me-2 fs-4"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white me-2 fs-4"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="bi bi-twitter"></i></a>
+                    </div>
                 </div>
             </div>
         </footer>
