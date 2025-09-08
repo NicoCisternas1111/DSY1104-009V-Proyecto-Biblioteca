@@ -1,5 +1,5 @@
 .carousel-item {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 32 / 9;
 }
 
 .carousel-item img.carousel-img {
@@ -23,4 +23,9 @@
     height: 350px; 
     object-fit: cover;
     object-position: center;
+}
+
+.footer-class{
+    position: block;
+    bottom: 0;
 }
