@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Button, Row, Col } from 'react-bootstrap';
+import { Card, Button, Row, Col, Carousel } from 'react-bootstrap';
 import { addToCart } from '../storage';
+import { Link } from 'react-router-dom';
+import { catalogoLibros } from '../data/libros';
 
-const products = [
-    { id: "isbn-9789560000001", title: "El Valle de los Caballos", author: "Jean M. Auel", description: "La inteligencia y la curiosidad de Ayla la impulsan a seguir su propio camino.", price: 12990, image: "https://www.lachilenalibros.cl/4152-large_default/el-valle-de-los-caballos.jpg" },
-    { id: "libro2", title: "El Problema Final", author: "Arturo Pérez-Reverte", description: "Una novela de misterio absorbente ambientada en los Alpes suizos.", price: 19990, image: "https://www.antartica.cl/media/catalog/product/9/7/9789563844191_1.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700" },
-    { id: "libro3", title: "Cien Años de Soledad", author: "Gabriel García Márquez", description: "La aclamada obra de Gabriel García Márquez que narra la historia de los Buendía.", price: 15500, image: "https://www.antartica.cl/media/catalog/product/9/7/9788439745358_1_4.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700" },
-    { id: "libro4", title: "Harry Potter y la Piedra Filosofal", author: "J.K. Rowling", description: "El inicio de la mágica saga que cautivó a millones de lectores en todo el mundo.", price: 14990, image: "https://www.antartica.cl/media/catalog/product/9/7/9786287744035_1.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700" },
-];
+const products = catalogoLibros.slice(0, 4);
 
 const Home = () => {
     const [added, setAdded] = useState({});
@@ -22,14 +19,44 @@ const Home = () => {
 
     return (
         <>
+            <Carousel className="home-carousel mb-5">
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src="https://www.libreriadelgam.cl/images/bloques_sliders/003-es-despachos-nov-2021.webp"
+                        alt="Nuevos Lanzamientos"
+                    />
+                </Carousel.Item>
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src="https://contrapunto.cl/cdn/shop/files/luminias.png?v=1753198995&width=1920"
+                        alt="Ofertas del Mes"
+                    />
+                </Carousel.Item>
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src="https://www.libreriadelgam.cl/images/bloques_sliders/012-es-copia-de-copia-de-retiro-en-tienda-3.webp"
+                        alt="Autores Destacados"
+                    />
+                </Carousel.Item>
+            </Carousel>
+
             <h2 className="text-center mb-4">Novedades</h2>
             <Row xs={1} md={2} lg={4} className="g-4">
                 {products.map((product) => (
                     <Col key={product.id} className="d-flex align-items-stretch">
                         <Card className="book-card">
-                            <Card.Img variant="top" src={product.image} />
+                            <Link to={`/libro/${product.id}`}>
+                                <Card.Img variant="top" src={product.image} />
+                            </Link>
                             <Card.Body className="d-flex flex-column">
-                                <Card.Title>{product.title}</Card.Title>
+                                <Card.Title>
+                                    <Link to={`/libro/${product.id}`} className="text-decoration-none text-dark">
+                                        {product.title}
+                                    </Link>
+                                </Card.Title>
                                 <Card.Text>{product.description}</Card.Text>
                                 <Card.Subtitle className="mb-2 text-muted">${product.price.toLocaleString()}</Card.Subtitle>
                                 <Button

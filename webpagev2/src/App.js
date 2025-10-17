@@ -8,6 +8,7 @@ import Contacto from './components/Contacto';
 import Libro from './components/Libro';
 import Usuario from './components/Usuario';
 import Somos from './components/Somos';
+import Catalogo from './components/Catalogo';
 
 function App() {
   return (
@@ -18,8 +19,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/carrito" element={<Carrito />} />
+            <Route path="/catalogo" element={<Catalogo />} />
             <Route path="/contacto" element={<Contacto />} />
-            <Route path="/libro" element={<Libro />} />
+            <Route path="/libro/:id" element={<Libro />} />
             <Route path="/usuario" element={<Usuario />} />
             <Route path="/somos" element={<Somos />} />
           </Routes>

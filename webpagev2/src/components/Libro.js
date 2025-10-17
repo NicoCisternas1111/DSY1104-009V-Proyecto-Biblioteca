@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
-import { Row, Col, Button, FormControl } from 'react-bootstrap';
+import { Row, Col, Button, FormControl, Alert } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import { addToCart, formatCLP } from '../storage';
+import { catalogoLibros } from '../data/libros';
 import { Link } from 'react-router-dom';
 
-// En una aplicación real, este producto vendría de una API o de las props.
-const PRODUCTO = {
-  id: "isbn-9789560000001",
-  title: "El Valle de los Caballos",
-  author: "Jean M. Auel",
-  description: "La inteligencia y la curiosidad de Ayla la impulsan a seguir su propio camino.",
-  price: 12990,
-  image: "https://www.lachilenalibros.cl/4152-large_default/el-valle-de-los-caballos.jpg"
-};
-
 const Libro = () => {
+    const { id } = useParams();
+    const product = catalogoLibros.find(p => p.id === id);
+
     const [qty, setQty] = useState(1);
     const [added, setAdded] = useState(false);
 
+    if (!product) {
+        return <Alert variant="danger">Libro no encontrado.</Alert>;
+    }
+
     const handleAddToCart = () => {
-        addToCart({ ...PRODUCTO, qty });
+        addToCart({ ...product, qty });
         setAdded(true);
         setTimeout(() => setAdded(false), 1200);
     };
@@ -26,15 +25,19 @@ const Libro = () => {
     return (
         <Row className="g-4 align-items-start">
             <Col lg={5}>
-                <img src={PRODUCTO.image} className="img-fluid rounded shadow" alt={`Portada de ${PRODUCTO.title}`} />
+                <img src={product.image} className="img-fluid rounded shadow" alt={`Portada de ${product.title}`} />
             </Col>
             <Col lg={7}>
-                <h1 className="h3 mb-1">{PRODUCTO.title}</h1>
-                <div className="text-muted mb-3">{PRODUCTO.author}</div>
-                <p className="mb-4">{PRODUCTO.description}</p>
-
-                <div className="d-flex align-items-center mb-3">
-                    <span className="h4 me-3">{formatCLP(PRODUCTO.price)}</span>
+                <h1 className="h2 mb-1">{product.title}</h1>
+                <h2 className="h5 text-muted mb-3">{product.author}</h2>
+                
+                <p className="lead mb-4">{product.description}</p>
+                <hr />
+                <h5 className="mt-4">Sinopsis</h5>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{product.extendedDescription}</p>
+                
+                <div className="d-flex align-items-center my-4">
+                    <span className="h4 me-3">{formatCLP(product.price)}</span>
                     <div className="ms-auto d-flex align-items-center">
                         <Button variant="outline-secondary" onClick={() => setQty(Math.max(1, qty - 1))}>−</Button>
                         <FormControl
