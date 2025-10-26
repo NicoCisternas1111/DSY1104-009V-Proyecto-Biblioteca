@@ -1,0 +1,130 @@
+.rb-text-trail {
+  display: inline-block;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1.1;
+}
+.rb-text-trail-char {
+  display: inline-block;
+  transform: translateY(1em);
+  opacity: 0;
+  animation: rbTrail .6s forwards ease-out;
+}
+@keyframes rbTrail {
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.rb-rotating {
+  display: inline-block;
+  min-width: 8ch;
+  font-weight: 600;
+  position: relative;
+}
+.rb-rotating-item {
+  display: inline-block;
+  animation: rbFadeIn .35s ease-out, rbSlideUp .35s ease-out;
+}
+@keyframes rbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rbSlideUp {
+  from { transform: translateY(6px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.rb-magnet-wrap { display: inline-block; perspective: 500px; }
+.rb-magnet-inner { display: inline-block; transition: transform .12s ease-out; will-change: transform; }
+
+.rb-glass-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 20px;
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.rb-glass-head { margin-bottom: .5rem; }
+.rb-glass-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.rb-glass-subtitle { margin: 0; opacity: .8; }
+.rb-glass-body { font-size: .95rem; }
+
+.rb-rolling-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: var(--rb-height, 260px);
+}
+
+.rb-rolling-mask::before,
+.rb-rolling-mask::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 56px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+}
+.rb-rolling-mask::after { right: 0; transform: scaleX(-1); }
+.rb-rolling-mask::before { left: 0; }
+
+.rb-rolling-mask.rb-rolling-mask-dark::before,
+.rb-rolling-mask.rb-rolling-mask-dark::after {
+  background: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
+}
+
+.rb-rolling-track {
+  display: flex;
+  gap: var(--rb-gap, 24px);
+  align-items: center;
+  animation: rb-scroll-x var(--rb-speed, 25s) linear infinite;
+  will-change: transform;
+}
+
+.rb-rolling-item {
+  flex: 0 0 auto;
+  height: var(--rb-height, 260px);
+  width: calc(var(--rb-height, 260px) * var(--rb-aspect, 0.6667));
+  display: grid;
+  place-items: center;
+}
+
+.rb-rolling-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 6px;
+}
+
+.rb-rolling-pauseable:hover,
+.rb-rolling-pauseable:hover .rb-rolling-item {
+  animation-play-state: paused;
+}
+
+@keyframes rb-scroll-x {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-rolling-track,
+  .marquee-text,
+  .rb-rotating-item,
+  .rb-text-trail-char {
+    animation: none !important;
+    transform: none !important;
+  }
+}
