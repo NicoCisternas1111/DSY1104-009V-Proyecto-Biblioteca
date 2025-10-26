@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Navbar, Container, Nav, Offcanvas } from 'react-bootstrap';
 import { getCart } from '../storage';
 import logo from '../assets/logo.png';
-import '../ui/reactbits/reactbits.css'; // mantenemos el css base
+import '../ui/reactbits/reactbits.css';
 
 const Header = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -24,7 +24,7 @@ const Header = () => {
 
   return (
     <>
-      {/* === Franja de promociones con marquesina lateral === */}
+      {}
       <div
         className="d-none d-md-block"
         style={{
@@ -51,7 +51,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* === Navbar principal === */}
+      {}
       <Navbar bg="light" expand="lg" className="border-bottom sticky-top mb-3">
         <Container fluid>
           <Navbar.Brand as={Link} to="/">

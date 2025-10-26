@@ -2,29 +2,6 @@ import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import "./reactbits.css";
 
-/**
- * RollingGallery — galería horizontal continua (clickeable opcional).
- *
- * Usos:
- *  A) Con imágenes (compat retro):
- *     <RollingGallery images={['/a.jpg','/b.jpg']} />
- *
- *  B) Con items { id, image } y links automáticos a /libro/:id:
- *     <RollingGallery items={[{id:'123', image:'/a.jpg'}]} clickable />
- *
- * Props:
- *  - images: string[]  (solo imágenes)
- *  - items:  {id:any, image:string}[]  (recomendado para enlaces)
- *  - clickable: boolean (si true y hay id, envuelve en <Link>)
- *  - toFn: (item) => string   (ruta custom; por defecto `/libro/${item.id}`)
- *  - height: number|string (alto del marco)              [default 260]
- *  - gap: number (px entre ítems)                        [default 24]
- *  - speed: number (segundos por vuelta completa)        [default 25]
- *  - pauseOnHover: boolean (pausa al hover)              [default true]
- *  - mask: boolean (gradiente en bordes)                 [default true]
- *  - aspect: number (ancho/alto; 2:3 ≈ 0.6667)          [default 0.6667]
- *  - className: string (clases extra en el wrapper)
- */
 export default function RollingGallery({
   images = [],
   items = [],
@@ -40,12 +17,10 @@ export default function RollingGallery({
 }) {
   const pxHeight = typeof height === "number" ? `${height}px` : height;
 
-  // Normaliza data: prioriza "items"; si no, mapea "images"
   const base = items?.length
     ? items
     : images?.map((src, i) => ({ id: i, image: src })) ?? [];
 
-  // Duplicamos para loop continuo
   const loop = useMemo(() => [...base, ...base], [base]);
 
   if (!base.length) return null;

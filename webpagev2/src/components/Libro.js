@@ -70,7 +70,7 @@ const Libro = () => {
           </div>
         </div>
 
-        {/* === Botones principales con efecto Magnet === */}
+        {}
         <div className="d-grid d-sm-flex gap-2">
           <Magnet>
             <Button

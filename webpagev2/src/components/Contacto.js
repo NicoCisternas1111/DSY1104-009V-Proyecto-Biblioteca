@@ -25,11 +25,9 @@ const Contacto = () => {
       return;
     }
     setSending(true);
-    // Simula envío…
     await new Promise((r) => setTimeout(r, 800));
     setSending(false);
     setSent(true);
-    // Limpia
     setForm({ nombre: '', email: '', asunto: '', mensaje: '' });
   };
 

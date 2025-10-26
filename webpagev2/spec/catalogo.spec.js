@@ -70,11 +70,9 @@ describe('Componente Catalogo', () => {
     const categoriaBtn = screen.getByRole('button', { name: /Fantasía/i });
     await userEvent.click(categoriaBtn);
 
-    // Debe haber al menos un título de "El Señor de los Anillos" (pueden ser varios)
     const tolkienTitles = screen.getAllByText(/El Señor de los Anillos/i);
     expect(tolkienTitles.length).toBeGreaterThan(0);
 
-    // Y NO debe aparecer "Don Quijote..." en las tarjetas (excluimos selects/options)
     const quijotesVisibles = screen
       .queryAllByText(/Don Quijote de la Mancha/i)
       .filter((el) => el.tagName.toLowerCase() !== 'option');
@@ -90,11 +88,8 @@ describe('Componente Catalogo', () => {
 
     const rangeInput = screen.getByRole('slider');
 
-    // Llévalo a 20000 para filtrar fuera los de 29.990
-    // (tu componente escucha onChange, así que usamos change)
     fireEvent.change(rangeInput, { target: { value: '20000' } });
 
-    // Espera a que NO queden precios 29.990 en las tarjetas
     await waitFor(() => {
       const precios29990 = screen
         .queryAllByText(/\$?\s*29[.,]?\s*990/)
@@ -113,16 +108,13 @@ describe('Componente Catalogo', () => {
     const selectAutor = screen.getByRole('combobox');
     await userEvent.selectOptions(selectAutor, 'George Orwell');
 
-    // El <select> debe quedar con el valor
     expect(selectAutor.value).toBe('George Orwell');
 
-    // Debe haber tarjetas visibles con "George Orwell" (excluimos el <option>)
     const orwellsVisibles = screen
       .queryAllByText(/George Orwell/i)
       .filter((el) => el.tagName.toLowerCase() !== 'option');
     expect(orwellsVisibles.length).toBeGreaterThan(0);
 
-    // En las tarjetas ya NO debe aparecer "Miguel de Cervantes" (excluimos <option>)
     const cervantesVisibles = screen
       .queryAllByText(/Miguel de Cervantes/i)
       .filter((el) => el.tagName.toLowerCase() !== 'option');
