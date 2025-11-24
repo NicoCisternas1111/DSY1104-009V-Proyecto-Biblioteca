@@ -8,17 +8,19 @@ const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const user = await login(email, password);
 
-      if (user.role === 'admin') {
+      if (user?.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/');
@@ -26,6 +28,8 @@ const LoginForm = () => {
     } catch (err) {
       console.error(err);
       setError(err.message || 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,7 +60,9 @@ const LoginForm = () => {
       </Form.Group>
 
       <div className="d-grid">
-        <ActionBtn type="submit">Iniciar sesión</ActionBtn>
+        <ActionBtn type="submit" disabled={loading}>
+          {loading ? 'Ingresando...' : 'Iniciar sesión'}
+        </ActionBtn>
       </div>
 
       <div className="text-center mt-3">

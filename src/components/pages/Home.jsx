@@ -5,6 +5,19 @@ import NewArrivals from '../organisms/NewArrivals';
 import FluidGlassCard from '../../ui/reactbits/FluidGlassCard';
 import { fetchBooks } from '../../services/api';
 
+// Últimos N libros por fecha de creación
+function getRecentBooks(list, count = 8) {
+  if (!Array.isArray(list) || list.length === 0) return [];
+
+  const sorted = [...list].sort((a, b) => {
+    const da = new Date(a.createdAt || a.created_at || 0);
+    const db = new Date(b.createdAt || b.created_at || 0);
+    return db - da; // nuevos primero
+  });
+
+  return sorted.slice(0, count);
+}
+
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,12 +29,10 @@ const Home = () => {
         setLoading(true);
         setError('');
 
-        // Pedimos algunos libros para el home (ajusta el size si quieres)
-        const data = await fetchBooks({ size: 12 });
+        // Pide muchos libros para que el carrusel tenga todos
+        const data = await fetchBooks({ page: 0, size: 1000 });
 
-        // Soporta tanto array plano como respuesta paginada
         const list = Array.isArray(data) ? data : (data?.content || []);
-
         setBooks(list);
       } catch (err) {
         console.error('Error cargando libros para el home:', err);
@@ -34,13 +45,13 @@ const Home = () => {
     loadBooks();
   }, []);
 
-  const recentBooks = books.slice(0, 4);
+  // Ahora los 8 más nuevos
+  const recentBooks = getRecentBooks(books, 8);
 
   return (
     <>
       <HeroSection />
 
-      {/* Estado de carga / error simple */}
       {loading && (
         <div className="container my-4">
           <p>Cargando libros destacados...</p>
@@ -57,6 +68,7 @@ const Home = () => {
 
       {!loading && !error && books.length > 0 && (
         <>
+          {/* Carrusel usa TODOS los libros cargados */}
           <FeaturedGallery items={books} />
 
           <div className="container mb-5">
@@ -68,6 +80,7 @@ const Home = () => {
             </FluidGlassCard>
           </div>
 
+          {/* 8 más nuevos */}
           <NewArrivals books={recentBooks} />
         </>
       )}
