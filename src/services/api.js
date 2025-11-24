@@ -25,29 +25,21 @@ export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
     config.body = JSON.stringify(body);
   }
 
-  const resp = await fetch(`${API_BASE_URL}${path}`, config);
+  const res = await fetch(`${API_BASE_URL}${path}`, config);
+  const isJson = res.headers.get('content-type')?.includes('application/json');
+  const data = isJson ? await res.json() : null;
 
-  let data = null;
-  const text = await resp.text();
-  if (text) {
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = text;
-    }
-  }
-
-  if (!resp.ok) {
-    const error = new Error(data?.message || `Error HTTP ${resp.status}`);
-    error.status = resp.status;
-    error.data = data;
-    throw error;
+  if (!res.ok) {
+    const message = data?.message || data?.error || res?.statusText || 'Error en la petición';
+    throw new Error(message);
   }
 
   return data;
 }
 
-// ========= AUTH =========
+// ========================
+// AUTH
+// ========================
 
 export function loginApi(email, password) {
   return apiRequest('/auth/login', {
@@ -60,19 +52,45 @@ export function getMe() {
   return apiRequest('/auth/me', { method: 'GET' });
 }
 
-// ========= LIBROS PÚBLICO =========
+export function registerUser({ name, email, password }) {
+  return apiRequest('/auth/register', {
+    method: 'POST',
+    body: { name, email, password },
+  });
+}
 
-export function fetchBooks(params = {}) {
-  const qs = new URLSearchParams(params).toString();
-  const url = qs ? `/api/books?${qs}` : '/api/books';
-  return apiRequest(url, { method: 'GET' });
+export function changePassword({ currentPassword, newPassword }) {
+  return apiRequest('/api/users/me/change-password', {
+    method: 'POST',
+    body: { currentPassword, newPassword },
+  });
+}
+
+// ========================
+// LIBROS PÚBLICOS
+// ========================
+
+export function fetchBooks({ page = 0, size = 100, q, category, priceMin, priceMax } = {}) {
+  const params = new URLSearchParams();
+  params.set('page', page);
+  params.set('size', size);
+
+  if (q) params.set('q', q);
+  if (category && category !== 'Todas') params.set('category', category);
+  if (priceMin != null) params.set('priceMin', priceMin);
+  if (priceMax != null) params.set('priceMax', priceMax);
+
+  const qs = params.toString();
+  return apiRequest(`/api/books${qs ? `?${qs}` : ''}`);
 }
 
 export function fetchBookById(id) {
-  return apiRequest(`/api/books/${id}`, { method: 'GET' });
+  return apiRequest(`/api/books/${id}`);
 }
 
-// ========= LIBROS ADMIN =========
+// ========================
+// ADMIN LIBROS
+// ========================
 
 export function createBook(book) {
   return apiRequest('/api/admin/books', {
