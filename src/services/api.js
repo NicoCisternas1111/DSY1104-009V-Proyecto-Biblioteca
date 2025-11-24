@@ -1,7 +1,4 @@
-// src/services/api.js
-
-// Base de la API (sin /api al final)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = "http://biblioteca-backend-env.eba-y69gtg3a.us-east-1.elasticbeanstalk.com/api/books";
 
 function getToken() {
   return localStorage.getItem('token');
