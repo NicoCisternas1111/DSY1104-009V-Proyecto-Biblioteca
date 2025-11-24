@@ -1,55 +1,101 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+// src/context/AuthContext.jsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { loginApi, getMe } from '../services/api';
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
+    const stored = localStorage.getItem('user');
+    if (!stored) return null;
     try {
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error("Error al leer usuario del storage:", error);
+      return JSON.parse(stored);
+    } catch {
       return null;
     }
   });
 
-  const login = (email, password) => {
-    let role = 'user';
-    let name = 'Cliente Frecuente';
+  const [loading, setLoading] = useState(true);
 
-    if (email === 'admin@duoc.cl' && password === 'admin') {
-      role = 'admin';
-      name = 'Administrador Sistema';
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setLoading(false);
+      return;
     }
 
-    const userData = {
-      email,
-      name,
-      role,
-      token: 'simulated-jwt-token-xyz-123'
-    };
+    if (user) {
+      setLoading(false);
+      return;
+    }
 
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    
-    return userData;
+    (async () => {
+      try {
+        const me = await getMe();
+        const role = me.role === 'ROLE_ADMIN' ? 'admin' : 'user';
+
+        const userData = {
+          name: me.name,
+          email: me.email,
+          role,
+        };
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } catch (err) {
+        console.error('No se pudo restaurar la sesión', err);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
+
+  const login = async (email, password) => {
+    setLoading(true);
+    try {
+      const data = await loginApi(email, password);
+      if (!data?.token) {
+        throw new Error('Credenciales inválidas');
+      }
+
+      localStorage.setItem('token', data.token);
+
+      const me = await getMe();
+      const role = me.role === 'ROLE_ADMIN' ? 'admin' : 'user';
+
+      const userData = {
+        name: me.name,
+        email: me.email,
+        role,
+      };
+
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      return userData;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth debe usarse dentro de AuthProvider');
+  return ctx;
 };

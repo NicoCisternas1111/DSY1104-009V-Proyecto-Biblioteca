@@ -1,100 +1,103 @@
-import React, { useState } from 'react';
-import { Row, Col, Container, Button } from 'react-bootstrap';
-import { useParams, Link } from 'react-router-dom';
-import { catalogoLibros } from '../../data/libros';
+// src/components/pages/Libro.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Container, Row, Col, Alert, Spinner, Button } from 'react-bootstrap';
+import { fetchBookById } from '../../services/api';
 import { addToCart } from '../../storage';
-import PriceTag from '../atoms/PriceTag';
-import QuantitySelector from '../atoms/QuantitySelector';
-import BookMeta from '../molecules/BookMeta';
-import Magnet from '../../ui/reactbits/Magnet';
 
 const Libro = () => {
   const { id } = useParams();
-  const product = catalogoLibros.find(p => p.id === id);
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [qty, setQty] = useState(1);
-  const [added, setAdded] = useState(false);
+  useEffect(() => {
+    const loadBook = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await fetchBookById(id);
+        setBook(data);
+      } catch (err) {
+        console.error(err);
+        setError('No se pudo cargar la información del libro.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!product) {
-    return <Container className="py-5"><h2>Libro no encontrado 😢</h2></Container>;
+    loadBook();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Container className="text-center py-5">
+        <Spinner animation="border" role="status" />
+        <p className="mt-3 mb-0">Cargando libro...</p>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!book) {
+    return (
+      <Container className="py-5">
+        <Alert variant="warning" className="text-center">
+          Libro no encontrado.
+        </Alert>
+      </Container>
+    );
   }
 
   const handleAddToCart = () => {
-    addToCart({ ...product, qty });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1200);
+    addToCart({
+      id: book.id,
+      title: book.title,
+      price: book.price,
+      image: book.image,
+      qty: 1,
+    });
   };
 
   return (
     <Container className="py-5">
-      <Row className="g-5 align-items-start">
-        {/* Columna Imagen */}
-        <Col lg={5} className="position-relative">
-          <div className="sticky-top" style={{ top: '100px', zIndex: 1 }}>
-              <img
-                src={product.image}
-                className="img-fluid rounded-3 shadow-lg w-100"
-                alt={`Portada de ${product.title}`}
-                style={{ maxHeight: '600px', objectFit: 'cover' }}
-              />
-          </div>
-        </Col>
-
-        {/* Columna Info */}
-        <Col lg={7}>
-          <BookMeta 
-            title={product.title}
-            author={product.author}
-            description={product.description}
-            extendedDescription={product.extendedDescription}
+      <Row>
+        <Col md={4} className="mb-4">
+          <img
+            src={book.image}
+            alt={book.title}
+            className="img-fluid rounded shadow-sm"
           />
+        </Col>
+        <Col md={8}>
+          <h2 className="mb-3">{book.title}</h2>
+          <p className="text-muted mb-1">Autor: {book.author}</p>
+          <p className="text-muted mb-3">Categoría: {book.category}</p>
+          <h4 className="text-success mb-3">
+            ${book.price?.toLocaleString('es-CL')}
+          </h4>
+          <p className="mb-3">
+            {book.description || 'Sin descripción disponible.'}
+          </p>
+          {book.extendedDescription && (
+            <p className="text-muted">
+              {book.extendedDescription}
+            </p>
+          )}
+          <p className="mb-3">Stock disponible: {book.stock}</p>
 
-          <hr className="my-5 opacity-10" />
-
-          <div className="d-flex flex-wrap align-items-center gap-4 mb-4">
-            <div>
-                <small className="text-uppercase text-muted fw-bold" style={{ fontSize: '0.75rem' }}>Precio</small>
-                <div className="fs-2 fw-bold text-dark">
-                    <PriceTag value={product.price} className="text-dark" />
-                </div>
-            </div>
-
-            <div className="vr opacity-25 d-none d-sm-block" style={{ height: '50px' }}></div>
-
-            <div>
-                <small className="text-uppercase text-muted fw-bold mb-1 d-block" style={{ fontSize: '0.75rem' }}>Cantidad</small>
-                <QuantitySelector 
-                    qty={qty} 
-                    onChange={setQty}
-                    onIncrease={() => setQty(q => q + 1)}
-                    onDecrease={() => setQty(q => Math.max(1, q - 1))}
-                />
-            </div>
-          </div>
-
-          <div className="d-grid d-sm-flex gap-3">
-            <Magnet>
-              <Button
-                variant={added ? "success" : "primary"}
-                size="lg"
-                onClick={handleAddToCart}
-                disabled={added}
-                className="px-5 rounded-pill"
-              >
-                {added ? '✓ Agregado al carrito' : 'Agregar al carrito'}
-              </Button>
-            </Magnet>
-
-            <Button
-              as={Link}
-              to="/carrito"
-              variant="outline-dark"
-              size="lg"
-              className="px-4 rounded-pill"
-            >
-              Ir al carrito
-            </Button>
-          </div>
+          <Button variant="primary" onClick={handleAddToCart}>
+            Agregar al carrito
+          </Button>
         </Col>
       </Row>
     </Container>
