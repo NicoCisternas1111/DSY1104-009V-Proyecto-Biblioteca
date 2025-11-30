@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://biblioteca-backend-env.eba-y69gtg3a.us-east-1.elasticbeanstalk.com/api/books";
+const API_BASE_URL = "http://biblioteca-backend-env.eba-y69gtg3a.us-east-1.elasticbeanstalk.com";
 
 function getToken() {
   return localStorage.getItem('token');
