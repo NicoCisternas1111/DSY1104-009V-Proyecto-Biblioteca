@@ -64,6 +64,12 @@ const LoginForm = () => {
           {loading ? 'Ingresando...' : 'Iniciar sesión'}
         </ActionBtn>
       </div>
+
+      <div className="text-center mt-3">
+        <small className="text-muted">
+          Admin: <strong>admin@biblioteca.cl</strong> / <strong>Admin1234!</strong>
+        </small>
+      </div>
     </Form>
   );
 };

@@ -43,6 +43,7 @@ const Carrito = () => {
       return;
     }
 
+    // Cualquier usuario logueado puede simular la compra
     if (!user) {
       alert('Debes iniciar sesión para simular la compra.');
       navigate('/usuario');
@@ -59,6 +60,7 @@ const Carrito = () => {
       setProcessing(true);
 
       for (const item of cart) {
+        // 1. Obtenemos el libro actualizado desde el backend
         const book = await fetchBookById(item.id);
 
         const currentStock = book.stock ?? 0;
@@ -68,20 +70,27 @@ const Carrito = () => {
           throw new Error(`Stock insuficiente para "${book.title}".`);
         }
 
+        // 2. Preparamos payload para updateBook (sin campos de solo lectura / HATEOAS)
+        const {
+          id,
+          createdAt,
+          updatedAt,
+          created_at,
+          updated_at,
+          _links,
+          ...bookPayload
+        } = book;
+
         const payload = {
-          title: book.title,
-          author: book.author,
-          category: typeof book.category === 'object' ? book.category?.name : book.category,
-          price: Number(book.price),
+          ...bookPayload,
           stock: newStock,
-          image: book.image || null,
-          description: book.description || null,
-          extendedDescription: book.extendedDescription || null,
         };
 
+        // 3. Actualizamos el libro en el backend (descontar stock)
         await updateBook(item.id, payload);
       }
 
+      // 4. Vaciar carrito y mostrar mensaje
       handleEmptyCart();
       setMessage('Compra simulada correctamente. El stock fue actualizado en la base de datos.');
     } catch (err) {
@@ -99,6 +108,7 @@ const Carrito = () => {
     }
   };
 
+  // Vista de carrito vacío
   if (cart.length === 0) {
     return (
       <Container className="py-5 text-center">
