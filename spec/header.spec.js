@@ -1,39 +1,51 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Header from '../src/components/Header'; 
+
+import { AuthProvider } from '../src/context/AuthContext';
+import Header from '../src/components/organisms/Header';
 
 describe('Header (Navbar)', () => {
-  it('renderiza la barra de navegación', () => {
+  const renderHeader = () =>
     render(
-      <MemoryRouter>
-        <Header />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      </AuthProvider>
     );
-    const nav = screen.getByRole('navigation');
-    expect(nav).toBeTruthy();
+
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  it('muestra los enlaces principales (p.ej., Inicio / Catálogo / Carrito)', () => {
-    render(
-      <MemoryRouter>
-        <Header />
-      </MemoryRouter>
-    );
-    const inicio = screen.queryByRole('link', { name: /inicio/i });
-    const catalogo = screen.queryByRole('link', { name: /catálog/i });
-    const carrito = screen.queryByRole('link', { name: /carrit/i });
+  it('renderiza la barra de navegación', () => {
+    renderHeader();
+    expect(screen.getByRole('navigation')).toBeTruthy();
+  });
 
-    expect(inicio || catalogo || carrito).toBeTruthy();
+  it('muestra los enlaces principales', () => {
+    renderHeader();
+
+    expect(screen.getByText(/inicio/i)).toBeTruthy();
+    expect(screen.getByText(/catálogo/i)).toBeTruthy();
+    expect(screen.getByText(/contacto/i)).toBeTruthy();
   });
 
   it('muestra el contador del carrito si existe', () => {
-    render(
-      <MemoryRouter>
-        <Header />
-      </MemoryRouter>
+    localStorage.setItem(
+      'cart_v1',
+      JSON.stringify([
+        { id: '1', title: 'Libro Test', price: 1000, image: 'x.jpg', qty: 2 }
+      ])
     );
-    const badge = screen.queryByTestId('cart-count');
-    expect(true).toBe(true);
+
+    renderHeader();
+
+    // El número visible
+    expect(screen.getByText('2')).toBeTruthy();
+
+    // El texto accesible oculto
+    expect(screen.getByText(/artículos/i)).toBeTruthy();
   });
 });

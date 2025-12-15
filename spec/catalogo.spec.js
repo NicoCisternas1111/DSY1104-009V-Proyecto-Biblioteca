@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+
 import Catalogo from '../src/components/pages/Catalogo';
 
 const mockBooksResponse = {
@@ -11,18 +12,29 @@ const mockBooksResponse = {
       author: 'Estudiante Modelo',
       price: 15000,
       category: 'Educación',
-      image: 'test.jpg'
-    }
-  ]
+      image: 'test.jpg',
+    },
+  ],
 };
 
 describe('Rúbrica RA3: Integración Backend y Visualización', () => {
-  
   beforeEach(() => {
-    spyOn(window, 'fetch').and.returnValue(Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(mockBooksResponse)
-    }));
+    // Mock de fetch compatible con apiRequest():
+    // - fetch(url, config)
+    // - res.headers.get('content-type')
+    spyOn(window, 'fetch').and.callFake(() =>
+      Promise.resolve({
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+        json: () => Promise.resolve(mockBooksResponse),
+      })
+    );
+  });
+
+  afterEach(() => {
+    window.fetch.calls.reset();
   });
 
   it('Debe obtener libros desde la API y renderizarlos correctamente', async () => {
@@ -32,7 +44,12 @@ describe('Rúbrica RA3: Integración Backend y Visualización', () => {
       </BrowserRouter>
     );
 
-    expect(window.fetch).toHaveBeenCalledWith(jasmine.stringMatching('/api/books'));
+    await waitFor(() => {
+      // fetchBooks() llama a /api/books?page=0&size=100 (y además pasa config como 2do argumento)
+      expect(window.fetch).toHaveBeenCalled();
+      expect(window.fetch.calls.argsFor(0)[0]).toMatch(/\/api\/books/);
+      expect(typeof window.fetch.calls.argsFor(0)[1]).toBe('object');
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Libro Rúbrica 100%')).toBeTruthy();
@@ -41,16 +58,18 @@ describe('Rúbrica RA3: Integración Backend y Visualización', () => {
   });
 
   it('Debe manejar errores de API gracefully (sin romper la app)', async () => {
-    window.fetch.and.returnValue(Promise.reject('API Caída'));
-    spyOn(console, 'error');
+    window.fetch.and.callFake(() => Promise.reject(new Error('API Caída')));
+    spyOn(console, 'error'); // silenciar ruido de console.error del componente
 
     render(
       <BrowserRouter>
         <Catalogo />
       </BrowserRouter>
     );
+
     await waitFor(() => {
-      expect(screen.queryByText('Libro Rúbrica 100%')).toBeNull();
+      // El componente muestra este mensaje cuando falla
+      expect(screen.getByText(/no se pudieron cargar los libros del catálogo/i)).toBeTruthy();
     });
   });
 });
